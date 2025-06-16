@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: insurance-client-app
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: credentials.json

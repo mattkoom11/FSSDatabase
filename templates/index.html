@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Client Search</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .form-section {
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    .btn-block {
+      width: 100%;
+    }
+    table th {
+      background-color: #e9ecef;
+    }
+    a.sort-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    a.sort-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="p-4">
+  <div class="container">
+    <h2 class="text-center mb-4">🔍 Client Search Dashboard</h2>
+
+    <!-- Search Form -->
+    <div class="form-section">
+      <form method="POST" action="/" class="row g-3">
+        <div class="col-md-4">
+          <label>Client Name</label>
+          <input type="text" name="name" class="form-control" value="{{ name }}">
+        </div>
+        <div class="col-md-4">
+          <label>2025 Plan</label>
+          <input type="text" name="plan2025" class="form-control" value="{{ plan2025 }}">
+        </div>
+        <div class="col-md-4">
+          <label>2024 Plan</label>
+          <input type="text" name="plan2024" class="form-control" value="{{ plan2024 }}">
+        </div>
+        <div class="col-md-4">
+          <label>Type (e.g. MAPD, PDP)</label>
+          <input type="text" name="type" class="form-control" value="{{ type }}">
+        </div>
+        <div class="col-md-4">
+          <label>Contact Date (From)</label>
+          <input type="date" name="contact_from" class="form-control" value="{{ contact_from }}">
+        </div>
+        <div class="col-md-4">
+          <label>Contact Date (To)</label>
+          <input type="date" name="contact_to" class="form-control" value="{{ contact_to }}">
+        </div>
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block" type="submit">🔍 Search</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- CSV Download Form -->
+    {% if clients %}
+    <form method="POST" action="/download" class="mb-4">
+      <input type="hidden" name="name" value="{{ name }}">
+      <input type="hidden" name="plan2025" value="{{ plan2025 }}">
+      <input type="hidden" name="plan2024" value="{{ plan2024 }}">
+      <input type="hidden" name="type" value="{{ type }}">
+      <input type="hidden" name="contact_from" value="{{ contact_from }}">
+      <input type="hidden" name="contact_to" value="{{ contact_to }}">
+      <button class="btn btn-success" type="submit">⬇ Download CSV</button>
+    </form>
+    {% endif %}
+
+    <!-- Results Table -->
+    {% if clients %}
+      <h4 class="text-center">Results ({{ clients|length }})</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped mt-3">
+          <thead>
+            <tr>
+              {% set new_dir = 'desc' if sort_dir == 'asc' else 'asc' %}
+              <th><a class="sort-link" href="?sort_by=client_name&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">Name {% if sort_by == 'client_name' %}{{ '↑' if sort_dir == 'asc' else '↓' }}{% endif %}</a></th>
+              <th><a class="sort-link" href="?sort_by=phone_number&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">Phone</a></th>
+              <th><a class="sort-link" href="?sort_by=plan_2025&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">2025 Plan</a></th>
+              <th><a class="sort-link" href="?sort_by=plan_2024&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">2024 Plan</a></th>
+              <th><a class="sort-link" href="?sort_by=type&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">Type</a></th>
+              <th><a class="sort-link" href="?sort_by=contact_date&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">Contact Date</a></th>
+              <th><a class="sort-link" href="?sort_by=address&sort_dir={{ new_dir }}&name={{ name }}&plan2025={{ plan2025 }}&plan2024={{ plan2024 }}&type={{ type }}&contact_from={{ contact_from }}&contact_to={{ contact_to }}">Address</a></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for client in clients %}
+              <tr>
+                <td>{{ client[0] }}</td>
+                <td>{{ client[1] }}</td>
+                <td>{{ client[2] }}</td>
+                <td>{{ client[3] }}</td>
+                <td>{{ client[4] }}</td>
+                <td>{{ client[5] }}</td>
+                <td>{{ client[6] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-secondary text-center">
+        No results found. Try adjusting your filters.
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
